@@ -11,7 +11,7 @@ var PacketHandler = require('./PacketHandler');
 var Entity = require('./entity');
 var Gamemode = require('./gamemodes');
 var BotLoader = require('./ai/BotLoader.js');
-
+var request = require('request');
 // GameServer implementation
 function GameServer(realmID, confile) {
     // Master server stuff
@@ -63,7 +63,7 @@ function GameServer(realmID, confile) {
         useWithMaster: false, // Advanced.
         masterIP: "127.0.0.1", // Advanced.
         masterCommands: false, // Advanced.
-        masterUpdate: 45, // Advanced.
+        masterUpdate: 45, // Notify current number of players to master and check if the connection is still alive.
         adminConfig: 0, // Turn on or off the use of admin configurations. (1 is on - 0 is off)
         adminNames: "", // The name a user would have to use to register as an admin.
         adminNewNames: "", // The name you will be changed to when using adminNames.
@@ -110,6 +110,10 @@ function GameServer(realmID, confile) {
         tourneyEndTime: 30, // Amount of ticks to wait after a player wins (1 tick = 1000 ms)
         tourneyAutoFill: 0, // If set to a value higher than 0, the tournament match will automatically fill up with bots after this amount of seconds
         tourneyAutoFillPlayers: 1, // The timer for filling the server with bots will not count down unless there is this amount of real players
+        
+        masterConnectRetryInterval: 5, // in second
+        serverRegion: 'Asia',
+        masterPort: 80,
     };
     // Parse config
     this.loadConfig(confile);
@@ -241,6 +245,7 @@ GameServer.prototype.start = function() {
                     clearInterval(this.masterServer.timer);
                     this.masterServer.close();
                     this.masterServer = null;
+                    this.connectToMaster();
                 }
             }.bind(this), this.config.masterUpdate * 1000);
             return;
@@ -288,6 +293,35 @@ GameServer.prototype.start = function() {
         this.clients.push(ws);
     }
     this.startStatsServer(this.config.serverStatsPort);
+    this.connectToMaster();
+};
+
+GameServer.prototype.connectToMaster = function() {
+    var self = this;
+    var attempt = 0;
+    var connect = function() {
+        console.log('Connecting to:', [self.config.masterIP, self.config.masterPort, self.config.serverRegion], ' - Attempt', ++attempt);
+        request({
+            'url':'http://'+self.config.masterIP + ':' + self.config.masterPort + '/api/add',
+            'qs': {
+                'ip': self.config.serverIP,
+                'port': self.config.serverPort,
+                'region': self.config.serverRegion,
+            }
+        }, function (error, response, body) {
+            console.log('Response from masterServer: ',body) // Show the HTML for the Google homepage.
+        });
+    };
+    var timer = setInterval(function(){
+        if (!self.masterServer) {
+            connect()
+        } else {
+            attempt = 0;
+            clearInterval(timer);
+        }
+    }, 1000 * self.config.masterConnectRetryInterval)
+    console.log('interval: ', self.config.masterConnectRetryInterval)
+    connect();
 };
 
 GameServer.prototype.getName = function() {
