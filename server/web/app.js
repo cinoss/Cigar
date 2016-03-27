@@ -9,13 +9,14 @@ var busboy = require('connect-busboy');
 var hbs = require('hbs');
 
 var routes = require('./routes/index');
-
+var api = require('./routes/api');
 var masterServer = null;
 
 var app = express();
 
 app.setMaster = function (server) {
     masterServer = server;
+    api.setMaster(server);
     this.updateRegions();
 };
 
@@ -80,6 +81,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use('/', routes);
+app.use('/api/', api);
 
 app.post('/', function (req, res, next) {
     var post = req.body;
