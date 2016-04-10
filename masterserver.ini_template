@@ -1,5 +1,5 @@
-serverIP = 192.168.1.107
-serverPort = 8888
+serverIP = %SERVERIP%
+serverPort = %SERVERPORT%
 gameserverPort = 1500
 updateTime = 60
 regions = {"US-1": 0}

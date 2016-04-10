@@ -1,5 +1,9 @@
 #/bin/bash
+cd /root/Cigar
+ip=$1
+port=$2
 node="node"
+sed -e "s/%SERVERIP%/${ip}/" -e "s/%SERVERPORT%/${port}/" masterserver.ini_template > masterserver.ini
 which apt-get > /dev/null
 if [ "$?" -eq "0" ]; then
 	node=$(which nodejs)

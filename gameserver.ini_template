@@ -1,3 +1,5 @@
+serverIP=%SERVERIP%
+serverPort=%SERVERPORT%
 // Cigar configurations file
 // Lines starting with slashes are comment lines
 // ---------------------------------------------------------------------------------------------
@@ -16,11 +18,11 @@
 // serverLogLevel			: Show more logs in the console, such as when a player joins. (1 is on - 0 is off)
 // ---------------------------------------------------------------------------------------------
 serverName = "Cigar"
-serverMaxConnections = 64
+serverMaxConnections = 1024
 serverStatsPort = 1600
 serverStatsUpdate = 120
 serverGamemode = 0
-serverBots = 0
+serverBots = 5
 serverViewBase = 1024
 // serverAdminPass = YOURPASSWORD
 serverLeaderboardLength = 10
@@ -31,8 +33,10 @@ serverLogLevel = 1
 // [Master Server]
 // MasterServer related		: Only change if you know what you are doing.
 // ---------------------------------------------------------------------------------------------
-useWithMaster = false
-masterIP = "127.0.0.1"
+useWithMaster = true
+masterIP = "%SERVERMASTERIP%"
+masterPort= "%SERVERMASTERPORT%"
+serverRegion="%REGION%"
 masterCommands = false
 masterUpdate = 45
 // ---------------------------------------------------------------------------------------------

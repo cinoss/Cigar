@@ -1,5 +1,13 @@
 #/bin/bash
+cd /root/Cigar
+ip=$1
+port=$2
+masterIP=$3
+masterPort=$4
+region=$5
 node="node"
+sed -e "s/%SERVERIP%/${ip}/" -e "s/%SERVERPORT%/${port}/" -e "s/%SERVERMASTERIP%/${masterIP}/" -e "s/%SERVERMASTERPORT%/${masterPort}/" -e "s/%REGION%/${region}/" gameserver.ini_template > gameserver.ini
+
 which apt-get > /dev/null
 if [ "$?" -eq "0" ]; then
 	node=$(which nodejs)

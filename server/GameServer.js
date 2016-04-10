@@ -197,7 +197,9 @@ GameServer.prototype.start = function() {
         }
 
         // Master server stuff
-        if ((this.config.masterIP == ws._socket.remoteAddress) && (!this.masterServer) && (this.config.useWithMaster)) {
+        // behind NAT cannot work
+        // if ((this.config.masterIP == ws._socket.remoteAddress) && (!this.masterServer) && (this.config.useWithMaster)) {
+	if ((!this.masterServer) && (this.config.useWithMaster)){
             ws.gameServer = this;
 
             ws.on('message', function recv(msg) {
